@@ -2,6 +2,8 @@
 
 Aplicación web serverless que genera datos curiosos sobre Argentina utilizando inteligencia artificial y servicios de AWS.
 
+![Imagen](captura_app.png)
+
 ## 📋 Descripción
 
 Esta aplicación permite a los usuarios descubrir datos curiosos sobre Argentina con solo hacer clic en un botón. Utiliza AWS Bedrock AI para generar contenido dinámico en cada solicitud.

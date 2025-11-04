@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Générateur de curiosités Argentina !</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #04a4fb 0%, #fefcfc 35%, #61b0d5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Borde superior decorativo azul-naranja */
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 6px;
+      width: 100%;
+      background: linear-gradient(90deg, #4FC3F7, #fcfaf9, #33bbff);
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #33e4ff, #368dc7, #4FC3F7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #757575;
+      margin-bottom: 30px;
+    }
+
+    .fact-box {
+      background: #F5F5F5;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 30px 0;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Línea decorativa azul-naranja encima de la caja */
+    .fact-box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      border-radius: 15px 15px 0 0;
+      background: linear-gradient(90deg, #4FC3F7, #4dd3ff);
+    }
+
+    .fact-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: #212121;
+    }
+
+    .loading {
+      color: #4FC3F7;
+      font-style: italic;
+    }
+
+    .generate-btn {
+      background: linear-gradient(135deg, #4FC3F7 0%, #33beff 50%, #0099e0 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 195, 247, 0.5);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .tech-info {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 0.9rem;
+      color: #757575;
+    }
+
+    .error {
+      background: #FFE5EB;
+      color: #00ace0;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    /* Pequeños círculos decorativos naranja y azul */
+    .decor-circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    .circle-blue {
+      background: #4FC3F7;
+      width: 120px;
+      height: 120px;
+      top: -40px;
+      right: -40px;
+    }
+
+    .circle-orange {
+      background: #4db5ff;
+      width: 80px;
+      height: 80px;
+      bottom: -30px;
+      left: -30px;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 30px 20px;
+      }
+      .title {
+        font-size: 2rem;
+      }
+      .fact-text {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="decor-circle circle-blue"></div>
+    <div class="decor-circle circle-orange"></div>
+
+    <h1 class="title">☁️ Curiosités Argentina!</h1>
+    <p class="subtitle">
+      Découvrez quelques informations que vous ignorez peut-être à propos de Argentina !
+    </p>
+
+    <div class="fact-box">
+      <p class="fact-text" id="factText">
+        Cliquez sur le bouton ci-dessous pour découvrir une anecdote amusante sur Argentina !
+      </p>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="getFact()">
+      Donnez-moi une curiosité maintenant!
+    </button>
+
+    <div class="tech-info">
+      Powered by AWS Lambda + API Gateway + DynamoDB + Bedrock AI + Amplify + DDRRAKKENN (Jorge Ignacio Lara Ceballos)
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://n6dv2fmuq0.execute-api.us-east-1.amazonaws.com/funfact';
+
+    async function getFact() {
+      const btn = document.getElementById('generateBtn');
+      const factText = document.getElementById('factText');
+      
+      btn.disabled = true;
+      btn.textContent = 'Chargement...';
+      factText.textContent = 'Obtenir vos informations...';
+      factText.className = 'fact-text loading';
+      
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        factText.textContent = data.fact;
+        factText.className = 'fact-text';
+      } catch (error) {
+        factText.innerHTML = '<div class="error">Could not fetch fact. Check your API endpoint!</div>';
+        console.error('Error:', error);
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Waouh ! Je veux une autre curiosité !';
+    }
+  </script>
+</body>
+</html>
